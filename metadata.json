@@ -1,0 +1,5 @@
+{
+  "name": "Home Value AI",
+  "description": "An AI-powered tool that analyzes photos of your home, suggests high-ROI renovations, and visualizes the 'after' result to help you maximize your property's value.",
+  "requestFramePermissions": []
+}
