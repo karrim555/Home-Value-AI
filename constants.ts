@@ -31,3 +31,34 @@ export const ROI_DATA: { [key: string]: { avgCost: number; roi: number; category
 };
 
 export const VALID_CATEGORIES = Object.keys(ROI_DATA);
+
+export const getFinancialGrade = (roi: number) => {
+  if (roi >= 100) {
+    return {
+      grade: 'A+',
+      label: 'High Profit',
+      bannerLabel: 'EXCELLENT RETURN',
+      textColor: 'text-emerald-800',
+      bgColor: 'bg-emerald-100',
+      dividerColor: 'bg-emerald-500',
+    };
+  }
+  if (roi >= 60) {
+    return {
+      grade: 'B',
+      label: 'Solid Value',
+      bannerLabel: 'SOLID VALUE',
+      textColor: 'text-sky-800',
+      bgColor: 'bg-sky-100',
+      dividerColor: 'bg-sky-500',
+    };
+  }
+  return {
+    grade: 'C-',
+    label: 'Luxury Risk',
+    bannerLabel: 'LUXURY RISK',
+    textColor: 'text-red-800',
+    bgColor: 'bg-red-100',
+    dividerColor: 'bg-red-500',
+  };
+};

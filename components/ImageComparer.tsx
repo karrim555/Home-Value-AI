@@ -5,9 +5,10 @@ import React, { useState, useRef, useCallback, MouseEvent, TouchEvent, useEffect
 interface ImageComparerProps {
   before: string;
   after: string;
+  dividerColor?: string;
 }
 
-const ImageComparer: React.FC<ImageComparerProps> = ({ before, after }) => {
+const ImageComparer: React.FC<ImageComparerProps> = ({ before, after, dividerColor = 'bg-white/80' }) => {
   const [sliderPos, setSliderPos] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -78,7 +79,7 @@ const ImageComparer: React.FC<ImageComparerProps> = ({ before, after }) => {
         />
       </div>
       <div
-        className="absolute top-0 bottom-0 w-1 bg-white/80 cursor-ew-resize"
+        className={`absolute top-0 bottom-0 w-1 ${dividerColor} cursor-ew-resize`}
         style={{ left: `${sliderPos}%`, transform: 'translateX(-50%)' }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}

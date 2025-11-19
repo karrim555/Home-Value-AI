@@ -2,6 +2,7 @@ import React from 'react';
 import Spinner from './Spinner';
 import { RenovationSuggestion } from '../types';
 import ImageComparer from './ImageComparer';
+import { getFinancialGrade } from '../constants';
 
 interface VisualizationViewProps {
   originalImage: string;
@@ -12,16 +13,6 @@ interface VisualizationViewProps {
   error: string | null;
 }
 
-const getRoiGrade = (roi: number): { grade: string; color: string } => {
-  if (roi >= 150) return { grade: 'A+', color: 'text-emerald-500' };
-  if (roi >= 120) return { grade: 'A', color: 'text-emerald-500' };
-  if (roi >= 100) return { grade: 'B+', color: 'text-green-500' };
-  if (roi >= 80) return { grade: 'B', color: 'text-lime-500' };
-  if (roi >= 60) return { grade: 'C+', color: 'text-yellow-500' };
-  return { grade: 'C', color: 'text-amber-500' };
-};
-
-
 const VisualizationView: React.FC<VisualizationViewProps> = ({ 
     originalImage, 
     generatedImage, 
@@ -30,16 +21,20 @@ const VisualizationView: React.FC<VisualizationViewProps> = ({
     onRetry,
     error,
 }) => {
-  const roiGrade = getRoiGrade(suggestion.roi);
+  const gradeInfo = getFinancialGrade(suggestion.roi);
+  const valueAdd = suggestion.avgCost * (suggestion.roi / 100);
+  const formatCurrency = (value: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(value);
+
   return (
     <div className="w-full max-w-5xl mx-auto text-center">
-      <div className="flex justify-center items-center flex-wrap gap-x-4 gap-y-2 mb-2">
-        <h2 className="text-3xl font-bold font-serif">Visualizing: <span className="text-[#9CAFB7]">{suggestion.name}</span></h2>
-        <div className={`text-2xl font-bold px-3 py-1 rounded-lg ${roiGrade.color} bg-opacity-10 bg-current`}>
-            ROI Impact: {roiGrade.grade}
-        </div>
+      <h2 className="text-3xl font-bold font-serif mb-2">Visualizing: <span className="text-[#9CAFB7]">{suggestion.name}</span></h2>
+      <p className="text-lg text-[#36454F] opacity-80 mb-4 max-w-3xl mx-auto">{suggestion.description}</p>
+      
+      <div className={`inline-flex items-center gap-x-6 gap-y-1 flex-wrap justify-center font-bold p-3 rounded-xl mb-6 text-base ${gradeInfo.bgColor} ${gradeInfo.textColor}`}>
+          <span><span className="font-black">{gradeInfo.grade}</span> {gradeInfo.bannerLabel}</span>
+          <span className="opacity-90">Recouped: {suggestion.roi}%</span>
+          <span className="opacity-90">Net Value: +{formatCurrency(valueAdd)}</span>
       </div>
-      <p className="text-lg text-[#36454F] opacity-80 mb-8">{suggestion.description}</p>
       
       <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-white/50 border border-[#9CAFB7]/20 flex items-center justify-center text-[#9CAFB7]">
         {!generatedImage && !error && (
@@ -49,7 +44,7 @@ const VisualizationView: React.FC<VisualizationViewProps> = ({
             </div>
         )}
         {generatedImage && !error && (
-            <ImageComparer before={originalImage} after={generatedImage} />
+            <ImageComparer before={originalImage} after={generatedImage} dividerColor={gradeInfo.dividerColor} />
         )}
         {error && (
             <div className="p-4 text-center">

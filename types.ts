@@ -1,3 +1,4 @@
+
 export type RenovationCategory = 'Curb Appeal' | 'Kitchen' | 'Bathroom' | 'Interior' | 'Outdoor' | 'General';
 
 export interface RenovationSuggestion {
@@ -7,6 +8,7 @@ export interface RenovationSuggestion {
   avgCost: number;
   roi: number;
   category: RenovationCategory;
+  rationale?: string; // New: Explain why the ROI is high/low for this location
 }
 
 export interface ProductSuggestion {
@@ -30,13 +32,32 @@ export interface FeedItem {
 
 export interface Project extends RenovationSuggestion {
     isSaved: boolean;
+    actualCost?: number; // New: Track real spending via receipts
+    zipCode?: string; // New: For local product sourcing
 }
 
 export interface HomeAnalysis {
   id: string;
   image: StoredImage;
+  zipCode?: string; // New: Store location context
   suggestions: RenovationSuggestion[];
   summary: string;
   state: 'loading' | 'results' | 'error';
   error: string | null;
+}
+
+export interface RenovationPlan {
+    phases: {
+        phaseName: string;
+        tasks: string[]; // Names of projects in this phase
+        duration: string;
+        description: string;
+    }[];
+    totalDuration: string;
+    advice: string;
+}
+
+export interface ShoppingResult {
+    text: string;
+    sources: { title: string; uri: string }[];
 }

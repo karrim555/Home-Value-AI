@@ -1,17 +1,19 @@
+
 import React, { useState, useRef } from 'react';
 import { UploadIcon } from './Icons';
 
 interface ImageUploaderProps {
-  onImageUpload: (file: File) => void;
+  onImageUpload: (file: File, zipCode: string) => void;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
   const [dragActive, setDragActive] = useState(false);
+  const [zipCode, setZipCode] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = (files: FileList | null) => {
     if (files && files.length > 0) {
-      onImageUpload(files[0]);
+      onImageUpload(files[0], zipCode);
     }
   };
 
@@ -38,13 +40,32 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
   };
 
   const onButtonClick = () => {
+    if (!zipCode || zipCode.length < 5) {
+        alert("Please enter a valid Zip Code first for accurate market analysis.");
+        return;
+    }
     inputRef.current?.click();
   };
 
   return (
     <div className="text-center max-w-2xl w-full">
       <h2 className="text-3xl sm:text-4xl font-bold mb-2 font-serif text-[#36454F]">Analyze &amp; Visualize Your Home's Potential</h2>
-      <p className="text-lg text-[#36454F] opacity-80 mb-8">Upload a photo for AI-powered renovation ideas, ROI estimates, and 'after' visualizations.</p>
+      <p className="text-lg text-[#36454F] opacity-80 mb-8">
+        Upload a photo and provide your location for <span className="font-semibold text-[#5F8575]">Gemini 3 Pro</span> powered hyper-local ROI estimates.
+      </p>
+      
+      <div className="mb-6 max-w-xs mx-auto">
+        <label htmlFor="zip" className="block text-sm font-medium text-[#36454F]/70 mb-1 text-left">Location (Zip Code)</label>
+        <input 
+            type="text" 
+            id="zip"
+            value={zipCode}
+            onChange={(e) => setZipCode(e.target.value)}
+            placeholder="e.g. 90210"
+            className="w-full px-4 py-3 rounded-lg border border-[#9CAFB7]/50 focus:border-[#5F8575] focus:ring-2 focus:ring-[#5F8575]/20 outline-none transition-all text-lg shadow-sm text-center tracking-widest font-serif"
+        />
+      </div>
+
       <form
         className={`p-8 border-2 border-dashed rounded-xl transition-colors ${dragActive ? 'border-[#9CAFB7] bg-[#9CAFB7]/10' : 'border-[#9CAFB7]/50 hover:border-[#9CAFB7]'}`}
         onDragEnter={handleDrag}

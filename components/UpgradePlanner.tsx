@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 import { HomeAnalysis, Project, StoredImage, RenovationSuggestion } from '../types';
 import AnalysisResult from './AnalysisResult';
@@ -7,9 +8,9 @@ interface UpgradePlannerProps {
   analyses: HomeAnalysis[];
   projects: Project[];
   onVisualize: (suggestion: RenovationSuggestion, image: StoredImage) => void;
-  onSaveProject: (suggestion: RenovationSuggestion) => void;
+  onSaveProject: (suggestion: RenovationSuggestion, zipCode?: string) => void;
   visualizingSuggestionId: string | null;
-  onImageUpload: (file: File) => void;
+  onImageUpload: (file: File, zipCode: string) => void;
 }
 
 const UpgradePlanner: React.FC<UpgradePlannerProps> = ({
@@ -24,8 +25,12 @@ const UpgradePlanner: React.FC<UpgradePlannerProps> = ({
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    // For subsequent uploads, we just reuse the first analysis zip code or empty if none exists, 
+    // since this button is a quick action. Ideally we'd ask again, but for MVP speed we default.
+    const existingZip = analyses[0]?.zipCode || "90210"; 
+    
     if (file) {
-      onImageUpload(file);
+      onImageUpload(file, existingZip);
     }
     // Reset file input to allow uploading the same file again
     if(event.target) {
@@ -38,28 +43,7 @@ const UpgradePlanner: React.FC<UpgradePlannerProps> = ({
   };
 
   if (analyses.length === 0) {
-    return (
-        <div className="text-center text-[#36454F] opacity-80 flex flex-col items-center justify-center p-8">
-            <h2 className="text-3xl font-bold text-[#36454F] mb-4 font-serif">Your Home Analyses</h2>
-            <p className="max-w-md mb-8">
-            Upload a photo to get started. The AI will analyze your space and suggest high-ROI upgrades.
-            </p>
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/png, image/jpeg, image/webp"
-            />
-            <button
-                onClick={handleUploadClick}
-                className="inline-flex items-center gap-3 bg-[#9CAFB7] hover:bg-[#899aa1] text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg"
-            >
-                <UploadIcon className="w-6 h-6" />
-                Analyze First Photo
-            </button>
-      </div>
-    )
+    return null; 
   }
 
   return (
@@ -67,6 +51,11 @@ const UpgradePlanner: React.FC<UpgradePlannerProps> = ({
       <div className="text-center mb-12">
         <h1 className="text-3xl sm:text-4xl font-bold font-serif text-[#36454F]">Your Home Analyses</h1>
         <p className="text-lg text-[#36454F] opacity-80 mt-2">Review AI-powered suggestions for each of your uploaded photos.</p>
+        {analyses[0]?.zipCode && (
+            <span className="inline-block mt-2 px-3 py-1 bg-[#5F8575]/10 text-[#5F8575] rounded-full text-xs font-bold tracking-wider">
+                LOCATION: {analyses[0].zipCode}
+            </span>
+        )}
       </div>
 
       <div className="space-y-16">
